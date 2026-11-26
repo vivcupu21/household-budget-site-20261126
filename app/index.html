@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kitchen Table · Household Budget</title>
+<meta name="description" content="Kitchen Table is a household budget site: plan the month, track every dollar, pay the bills on time and grow the savings goals — all in one place, all in your browser.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="#/dashboard">
+      <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true"><rect x="4" y="20" width="40" height="22" rx="3" fill="#2e5339"/><path d="M6 22 L24 6 L42 22 Z" fill="#c05f3c"/><rect x="19" y="28" width="10" height="14" rx="1.5" fill="#f7f2e9"/><rect x="10" y="26" width="6" height="6" rx="1" fill="#f7f2e9"/><rect x="32" y="26" width="6" height="6" rx="1" fill="#f7f2e9"/></svg>
+      <span class="brand-text"><strong>Kitchen Table</strong><small>Household Budget</small></span>
+    </a>
+    <div class="month-switch" role="group" aria-label="Month">
+      <button type="button" id="month-prev" aria-label="Previous month">&#8249;</button>
+      <span id="month-label">November 2026</span>
+      <button type="button" id="month-next" aria-label="Next month">&#8250;</button>
+    </div>
+    <nav class="mainnav" aria-label="Sections">
+      <a href="#/dashboard" data-route="dashboard">Dashboard</a>
+      <a href="#/budget" data-route="budget">Budget</a>
+      <a href="#/transactions" data-route="transactions">Transactions</a>
+      <a href="#/bills" data-route="bills">Bills</a>
+      <a href="#/goals" data-route="goals">Goals</a>
+      <a href="#/reports" data-route="reports">Reports</a>
+      <a href="#/calculator" data-route="calculator">Calculator</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <noscript><p class="noscript">Kitchen Table needs JavaScript to add up your budget. Please enable it and reload.</p></noscript>
+
+  <!-- ============ DASHBOARD ============ -->
+  <section class="page" id="page-dashboard">
+    <div class="page-head">
+      <div>
+        <h1>Good evening, Marlowe household</h1>
+        <p class="lede" id="dash-subtitle">Here is where November stands — what came in, what went out, and what is left.</p>
+      </div>
+      <a class="btn btn-primary" href="#/transactions">+ Add transaction</a>
+    </div>
+
+    <div class="stats">
+      <article class="stat"><span class="stat-label">Income this month</span><strong class="stat-value" id="stat-income">$0.00</strong><span class="stat-sub" id="stat-income-sub"></span></article>
+      <article class="stat"><span class="stat-label">Spent so far</span><strong class="stat-value" id="stat-spent">$0.00</strong><span class="stat-sub" id="stat-spent-sub"></span></article>
+      <article class="stat"><span class="stat-label">Left to spend</span><strong class="stat-value" id="stat-left">$0.00</strong><span class="stat-sub" id="stat-left-sub"></span></article>
+      <article class="stat"><span class="stat-label">Saved this month</span><strong class="stat-value" id="stat-saved">$0.00</strong><span class="stat-sub" id="stat-saved-sub"></span></article>
+    </div>
+
+    <div class="grid-2">
+      <article class="card">
+        <h2>Where the money went</h2>
+        <div class="donut-wrap">
+          <div id="donut" role="img" aria-label="Spending by category chart"></div>
+          <ul class="legend" id="donut-legend"></ul>
+        </div>
+        <p class="card-foot"><a href="#/reports">See the full breakdown &#8594;</a></p>
+      </article>
+
+      <article class="card">
+        <h2>Budget at a glance</h2>
+        <div id="dash-budgets"></div>
+        <p class="card-foot"><a href="#/budget">Open the budget planner &#8594;</a></p>
+      </article>
+    </div>
+
+    <div class="grid-2">
+      <article class="card">
+        <h2>Coming up</h2>
+        <ul class="plain-list" id="dash-bills"></ul>
+        <p class="card-foot"><a href="#/bills">All bills &amp; recurring &#8594;</a></p>
+      </article>
+
+      <article class="card">
+        <h2>Savings goals</h2>
+        <div id="dash-goals"></div>
+        <p class="card-foot"><a href="#/goals">All savings goals &#8594;</a></p>
+      </article>
+    </div>
+
+    <article class="card">
+      <h2>Recent transactions</h2>
+      <div class="table-scroll"><table class="tx-table">
+        <thead><tr><th>Date</th><th>Where</th><th>Category</th><th class="num">Amount</th></tr></thead>
+        <tbody id="dash-recent"></tbody>
+      </table></div>
+      <p class="card-foot"><a href="#/transactions">See every transaction &#8594;</a></p>
+    </article>
+  </section>
+
+  <!-- ============ BUDGET ============ -->
+  <section class="page" id="page-budget" hidden>
+    <div class="page-head">
+      <div>
+        <h1>Budget planner</h1>
+        <p class="lede">Set a plan for every category, then watch the bars fill as the month goes on. Amounts are editable — click a number, type a new one, and the whole household updates.</p>
+      </div>
+    </div>
+    <div class="stats">
+      <article class="stat"><span class="stat-label">Planned spending</span><strong class="stat-value" id="bud-planned">$0.00</strong><span class="stat-sub">across all categories</span></article>
+      <article class="stat"><span class="stat-label">Actually spent</span><strong class="stat-value" id="bud-spent">$0.00</strong><span class="stat-sub" id="bud-spent-sub"></span></article>
+      <article class="stat"><span class="stat-label">Ready to assign</span><strong class="stat-value" id="bud-ready">$0.00</strong><span class="stat-sub">income not yet given a job</span></article>
+    </div>
+    <article class="card">
+      <h2>Categories</h2>
+      <div id="budget-rows"></div>
+    </article>
+    <article class="card">
+      <h2>Add a category</h2>
+      <form id="form-category" class="form-inline">
+        <label>Category name <input type="text" id="cat-name" required maxlength="30" placeholder="e.g. School trips"></label>
+        <label>Monthly budget ($) <input type="number" id="cat-amount" required min="0" step="1" placeholder="100"></label>
+        <button class="btn btn-primary" type="submit">Add category</button>
+      </form>
+      <p class="form-note" id="cat-msg" role="status"></p>
+    </article>
+  </section>
+
+  <!-- ============ TRANSACTIONS ============ -->
+  <section class="page" id="page-transactions" hidden>
+    <div class="page-head">
+      <div>
+        <h1>Transactions</h1>
+        <p class="lede">Every dollar in and out, in one ledger. Search, filter, add, or remove — the balance and the budget follow along.</p>
+      </div>
+    </div>
+    <article class="card">
+      <h2>Add a transaction</h2>
+      <form id="form-tx" class="form-grid">
+        <label>Date <input type="date" id="tx-date" required value="2026-11-26"></label>
+        <label>Where / what <input type="text" id="tx-payee" required maxlength="60" placeholder="e.g. GreenMart Supermarket"></label>
+        <label>Category <select id="tx-category"></select></label>
+        <label>Amount ($) <input type="number" id="tx-amount" required min="0.01" step="0.01" placeholder="25.00"></label>
+        <label class="wide">Note <input type="text" id="tx-note" maxlength="80" placeholder="Optional note"></label>
+        <span></span><button class="btn btn-primary" type="submit">Add to ledger</button>
+      </form>
+      <p class="form-note" id="tx-msg" role="status"></p>
+    </article>
+    <article class="card">
+      <h2>Ledger <span class="count" id="tx-count"></span></h2>
+      <div class="filters">
+        <label>Search <input type="search" id="tx-search" placeholder="Search payee or note"></label>
+        <label>Category <select id="tx-filter-cat"><option value="">All categories</option></select></label>
+        <label>Type <select id="tx-filter-type"><option value="">Spending &amp; income</option><option value="spending">Spending only</option><option value="income">Income only</option></select></label>
+      </div>
+      <div class="table-scroll"><table class="tx-table">
+        <thead><tr><th>Date</th><th>Where</th><th>Category</th><th>Note</th><th class="num">Amount</th><th></th></tr></thead>
+        <tbody id="tx-rows"></tbody>
+      </table></div>
+      <p class="card-foot">Balance for the month: <strong id="tx-balance">$0.00</strong> <span id="tx-balance-sub"></span></p>
+    </article>
+  </section>
+
+  <!-- ============ BILLS ============ -->
+  <section class="page" id="page-bills" hidden>
+    <div class="page-head">
+      <div>
+        <h1>Bills &amp; recurring</h1>
+        <p class="lede">Everything the household pays on a schedule. Mark a bill paid and it stays paid for this month; it comes back on its due day next month.</p>
+      </div>
+    </div>
+    <div class="stats">
+      <article class="stat"><span class="stat-label">Due this month</span><strong class="stat-value" id="bill-due">$0.00</strong><span class="stat-sub" id="bill-due-sub"></span></article>
+      <article class="stat"><span class="stat-label">Already paid</span><strong class="stat-value" id="bill-paid">$0.00</strong><span class="stat-sub" id="bill-paid-sub"></span></article>
+      <article class="stat"><span class="stat-label">Still to pay</span><strong class="stat-value" id="bill-left">$0.00</strong><span class="stat-sub" id="bill-left-sub"></span></article>
+    </div>
+    <article class="card">
+      <h2>All bills</h2>
+      <div id="bill-list"></div>
+    </article>
+    <article class="card">
+      <h2>Add a bill</h2>
+      <form id="form-bill" class="form-grid">
+        <label>Bill name <input type="text" id="bill-name" required maxlength="50" placeholder="e.g. Water — City Utilities"></label>
+        <label>Amount ($) <input type="number" id="bill-amount" required min="0.01" step="0.01" placeholder="65.00"></label>
+        <label>Due day of month <input type="number" id="bill-day" required min="1" max="28" step="1" placeholder="15"></label>
+        <label>Category <select id="bill-category"></select></label>
+        <label class="check"><input type="checkbox" id="bill-autopay"> Paid automatically</label>
+        <span></span><button class="btn btn-primary" type="submit">Add bill</button>
+      </form>
+      <p class="form-note" id="bill-msg" role="status"></p>
+    </article>
+  </section>
+
+  <!-- ============ GOALS ============ -->
+  <section class="page" id="page-goals" hidden>
+    <div class="page-head">
+      <div>
+        <h1>Savings goals</h1>
+        <p class="lede">Big things take small, steady steps. Put money toward a goal whenever there is some to spare and watch the bar move.</p>
+      </div>
+    </div>
+    <div class="stats">
+      <article class="stat"><span class="stat-label">Saved across goals</span><strong class="stat-value" id="goal-saved">$0.00</strong><span class="stat-sub" id="goal-saved-sub"></span></article>
+      <article class="stat"><span class="stat-label">Still to save</span><strong class="stat-value" id="goal-left">$0.00</strong><span class="stat-sub">across all open goals</span></article>
+    </div>
+    <div id="goal-list" class="goals"></div>
+    <article class="card">
+      <h2>Start a new goal</h2>
+      <form id="form-goal" class="form-grid">
+        <label>Goal name <input type="text" id="goal-name" required maxlength="50" placeholder="e.g. New washing machine"></label>
+        <label>Target ($) <input type="number" id="goal-target" required min="1" step="1" placeholder="800"></label>
+        <label>Already saved ($) <input type="number" id="goal-start" min="0" step="1" value="0"></label>
+        <label>Target date <input type="date" id="goal-date" value="2027-06-01"></label>
+        <span></span><button class="btn btn-primary" type="submit">Create goal</button>
+      </form>
+      <p class="form-note" id="goal-msg" role="status"></p>
+    </article>
+  </section>
+
+  <!-- ============ REPORTS ============ -->
+  <section class="page" id="page-reports" hidden>
+    <div class="page-head">
+      <div>
+        <h1>Reports</h1>
+        <p class="lede">Six months of the household in one view — how spending moves, which categories eat the most, and what to watch next.</p>
+      </div>
+    </div>
+    <article class="card">
+      <h2>Income vs spending — last 6 months</h2>
+      <div id="report-bars"></div>
+      <p class="card-foot" id="report-bars-note"></p>
+    </article>
+    <div class="grid-2">
+      <article class="card">
+        <h2>Biggest categories this month</h2>
+        <div id="report-cats"></div>
+      </article>
+      <article class="card">
+        <h2>What the numbers say</h2>
+        <ul class="insights" id="report-insights"></ul>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ CALCULATOR ============ -->
+  <section class="page" id="page-calculator" hidden>
+    <div class="page-head">
+      <div>
+        <h1>50 / 30 / 20 calculator</h1>
+        <p class="lede">A classic rule of thumb: about 50% of take-home pay for needs, 30% for wants, 20% for savings. Type in any monthly income and see the split — then compare it with how this household actually spent.</p>
+      </div>
+    </div>
+    <div class="grid-2">
+      <article class="card">
+        <h2>Your numbers</h2>
+        <form id="form-calc" class="form-stack">
+          <label>Monthly take-home pay ($)
+            <input type="number" id="calc-income" min="0" step="10" value="5850">
+          </label>
+          <label>Needs — rent, groceries, bills, transport (%)
+            <input type="range" id="calc-needs" min="20" max="80" step="1" value="50">
+            <output id="calc-needs-out">50%</output>
+          </label>
+          <label>Wants — dining out, fun, hobbies (%)
+            <input type="range" id="calc-wants" min="5" max="60" step="1" value="30">
+            <output id="calc-wants-out">30%</output>
+          </label>
+          <label>Savings &amp; extra debt payoff (%)
+            <input type="range" id="calc-save" min="5" max="60" step="1" value="20">
+            <output id="calc-save-out">20%</output>
+          </label>
+          <p class="form-note" id="calc-msg" role="status"></p>
+        </form>
+      </article>
+      <article class="card">
+        <h2>Your split</h2>
+        <div id="calc-results"></div>
+      </article>
+    </div>
+    <article class="card">
+      <h2>How the Marlowe household actually spent <span id="calc-month-label">November 2026</span></h2>
+      <div id="calc-actual"></div>
+      <p class="card-foot">Needs, wants and savings are grouped from the household's own categories. Change the month above to compare another month.</p>
+    </article>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <div>
+      <strong>Kitchen Table</strong> — a household budget site.
+      <p>Every figure on this site is the Marlowe household's own demo data. Nothing leaves your browser: your edits are stored on this device only, and the Reset button below puts the demo back the way it was.</p>
+    </div>
+    <div class="footer-actions">
+      <a class="btn" href="#/calculator">Try the 50/30/20 calculator</a>
+      <button class="btn btn-danger" type="button" id="reset-data">Reset demo data</button>
+    </div>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
